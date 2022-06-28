@@ -1,64 +1,49 @@
 // @ts-nocheck
-export function validate (str) {
+export function validateCPF (cpf) {
+	if (cpf === null) {
+        return false;
+	}
+    if (cpf === undefined) {
+        return undefined;
+    }
+    if (cpf.length < 11 || cpf.length > 14) {
+        return false;
+    }
+    cpf=cpf
+        .replace('.','')
+        .replace('.','')
+        .replace('-','')
+        .replace(" ","");    
+    if (cpf.split("").every(c => c === cpf[0])) {
+        return false;        
+    }
+    try{  
+        let firstDigitAccumulator = 0;
+        let secondDigitAccumulator = 0;
+        let firstDigitChecker = 0;
+        let secondDigitChecker = 0;
+        let restOfDivision = 0; 
+        let digit;
+        let generatedCheckDigits;
 
-	if (str !== null) {
-        if (str !== undefined) {
-            if (str.length >= 11 && str.length <= 14){
-
-                str=str
-                    .replace('.','')
-                    .replace('.','')
-                    .replace('-','')
-                    .replace(" ","");  
-    
-                if (!str.split("").every(c => c === str[0])) {
-                    try{  
-                        let     d1, d2;  
-                        let     dg1, dg2, rest;  
-                        let     digito;  
-                            let     nDigResult;  
-                        d1 = d2 = 0;  
-                        dg1 = dg2 = rest = 0;  
-                            
-                        for (let nCount = 1; nCount < str.length -1; nCount++) {  
-                            // if (isNaN(parseInt(str.substring(nCount -1, nCount)))) {
-                            // 	return false;
-                            // } else {
-    
-                                digito = parseInt(str.substring(nCount -1, nCount));
-                                if (isNaN(digito)) throw new Error('Invalid format');
-                                d1 = d1 + ( 11 - nCount ) * digito;  
-                                
-                                d2 = d2 + ( 12 - nCount ) * digito;  
-                                
-                            // }
-                        };  
-                            
-                        rest = (d1 % 11);  
-                
-                        dg1 = (rest < 2) ? dg1 = 0 : 11 - rest;  
-                        d2 += 2 * dg1;  
-                        rest = (d2 % 11);  
-                        if (rest < 2)  
-                            dg2 = 0;  
-                        else  
-                            dg2 = 11 - rest;  
-                
-                            let nDigVerific = str.substring(str.length-2, str.length);  
-                        nDigResult = "" + dg1 + "" + dg2;
-                        console.log('nDigVerific == nDigResult', nDigVerific == nDigResult);  
-                        return nDigVerific == nDigResult;
-                    }catch (e){
-                        console.error("Erro !"+e);  
-    
-                        return false;  
-                    }  
-                } else return false
-    
-            }else return false;
+        for (let multiplier = 1; multiplier < cpf.length - 1; multiplier++) {
+            digit = parseInt(cpf.substring(multiplier -1, multiplier));
+            if (isNaN(digit)) throw new Error('Invalid format');
+            firstDigitAccumulator = firstDigitAccumulator + ( 11 - multiplier ) * digit;
+            secondDigitAccumulator = secondDigitAccumulator + ( 12 - multiplier ) * digit;
         }
 
+        restOfDivision = (firstDigitAccumulator % 11);  
+        firstDigitChecker = (restOfDivision < 2) ? 0 : 11 - restOfDivision;
+        
+        secondDigitAccumulator += 2 * firstDigitChecker;
+        restOfDivision = (secondDigitAccumulator % 11);
+        secondDigitChecker = (restOfDivision < 2)  ? 0 : 11 - restOfDivision;
 
-	} else return false;
-
+        let checkDigits = cpf.substring(cpf.length-2, cpf.length);  
+        generatedCheckDigits = `${firstDigitChecker}${secondDigitChecker}`;
+        return checkDigits == generatedCheckDigits;
+    }catch (e){    
+        return false;  
+    }
 }
