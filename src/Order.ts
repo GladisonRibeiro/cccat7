@@ -4,6 +4,7 @@ import { Item } from './Item';
 import { OrderItem } from './OrderItem';
 
 export class Order {
+  private _minShippingCost = 10;
   private _cpf: Cpf;
   get cpf() {
     return this._cpf;
@@ -24,10 +25,26 @@ export class Order {
   }
 
   addItem(item: Item, quantity: number) {
-    this._itens.push(new OrderItem(item.idItem, item.price, quantity));
+    if (this._itens.some(orderItem => orderItem.idItem == item.idItem)) {
+      throw new Error('Item already exists');
+    }
+    this._itens.push(
+      new OrderItem(
+        item.idItem,
+        item.price,
+        quantity,
+        item.length,
+        item.width,
+        item.height,
+        item.weight,
+      ),
+    );
   }
 
   addCoupon(coupon: Coupon) {
+    if (coupon.expired()) {
+      throw new Error('Coupon is expired');
+    }
     this._coupon = coupon;
   }
 
@@ -37,5 +54,13 @@ export class Order {
       total -= this._coupon.getDiscount(total);
     }
     return total;
+  }
+
+  shippingCost(distance: number) {
+    const total = this._itens.reduce(
+      (total, item) => total + item.shippingCost(distance),
+      0,
+    );
+    return total > this._minShippingCost ? total : this._minShippingCost;
   }
 }

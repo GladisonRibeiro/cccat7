@@ -1,11 +1,14 @@
 export class Cpf {
-  private value!: string;
+  private _value!: string;
+  get value() {
+    return this._value;
+  }
 
   constructor(value: string) {
     if (!this.validate(value)) {
       throw new Error('Inválid CPF');
     }
-    this.value = value;
+    this._value = value;
   }
 
   CPF_LENGTH = 11;
@@ -66,5 +69,9 @@ export class Cpf {
     return restOfDivision < defaultLength - this.MAXIMUM_DIGIT_VALUE
       ? 0
       : defaultLength - restOfDivision;
+  }
+
+  toString() {
+    return this._value;
   }
 }

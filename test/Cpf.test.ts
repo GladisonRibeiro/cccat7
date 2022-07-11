@@ -12,6 +12,7 @@ test('Deve retornar um ao criar um cpf incorreto com mascara', () => {
 test('Deve criar um cpf sem mascara correto', () => {
   const cpf = new Cpf('19717316090');
   expect(cpf).toBeInstanceOf(Cpf);
+  expect(cpf.value).toBe('19717316090');
 });
 
 test('Deve retornar um erro ao criar um cpf incorreto sem mascara', () => {
