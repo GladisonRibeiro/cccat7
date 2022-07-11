@@ -1,7 +1,13 @@
+import { Item } from './Item';
+
 export class OrderItem {
   constructor(
-    readonly description: string,
+    readonly idItem: number,
     readonly price: number,
     readonly quantity: number,
   ) {}
+
+  getTotal() {
+    return this.price * this.quantity;
+  }
 }
