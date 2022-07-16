@@ -18,10 +18,9 @@ export class Order {
     return this._coupon;
   }
 
-  constructor(cpf: string, itens?: OrderItem[], coupon?: Coupon) {
+  constructor(cpf: string) {
     this._cpf = new Cpf(cpf);
-    this._itens = itens || [];
-    this._coupon = coupon;
+    this._itens = [];
   }
 
   addItem(item: Item, quantity: number) {

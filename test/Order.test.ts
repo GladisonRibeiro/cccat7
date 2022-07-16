@@ -5,11 +5,6 @@ import { OrderItem } from '../src/OrderItem';
 
 describe('Order', function () {
   const cpfValido = '290.991.040-73';
-  const itens = [
-    new OrderItem(0, 70.0, 1, 0, 0, 0, 0),
-    new OrderItem(1, 125.0, 3, 0, 0, 0, 0),
-    new OrderItem(2, 150, 2, 0, 0, 0, 0),
-  ];
 
   test('Não deve criar um pedido com cpf inválido', () => {
     expect(() => new Order('111.111.111-11')).toThrow(new Error('Inválid CPF'));
@@ -26,9 +21,13 @@ describe('Order', function () {
   });
 
   test('Deve criar um pedido com cupom de desconto (percentual sobre o total do pedido)', () => {
-    const order = new Order(cpfValido, itens);
+    const order = new Order(cpfValido);
     const coupon = new Coupon('#code', 10);
     order.addCoupon(coupon);
+
+    order.addItem(new Item(0, 'Camisa', 70.0, 0, 0, 0, 0), 1);
+    order.addItem(new Item(1, 'Calça', 125.0, 0, 0, 0, 0), 3);
+    order.addItem(new Item(2, 'Sapato', 150.0, 0, 0, 0, 0), 2);
 
     expect(order.coupon).toBeInstanceOf(Coupon);
     expect(order.coupon?.percentage).toBe(10);
@@ -36,13 +35,17 @@ describe('Order', function () {
   });
 
   test('Deve criar um pedido com cpf válido', () => {
-    const order = new Order(cpfValido, itens);
+    const order = new Order(cpfValido);
+    order.addItem(new Item(0, 'Camisa', 70.0, 0, 0, 0, 0), 1);
+    order.addItem(new Item(1, 'Calça', 125.0, 0, 0, 0, 0), 3);
+    order.addItem(new Item(2, 'Sapato', 150.0, 0, 0, 0, 0), 2);
+
     expect(order.cpf.toString()).toBe(cpfValido);
     expect(order.getTotal()).toBe(745.0);
   });
 
   test('Não deve aplicar cupom de desconto expirado', () => {
-    const order = new Order(cpfValido, itens);
+    const order = new Order(cpfValido);
     const coupon = new Coupon('#code', 10, new Date('2022-04-10T10:00:00Z'));
     expect(() => order.addCoupon(coupon)).toThrow(
       new Error('Coupon is expired'),
