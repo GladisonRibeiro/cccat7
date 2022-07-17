@@ -9,8 +9,8 @@ export class Coupon {
     return (total * this.percentage) / 100;
   }
 
-  expired() {
+  isExpired() {
     if (!this.validity) return false;
-    return this.validity < new Date();
+    return this.validity.getTime() < new Date().getTime();
   }
 }

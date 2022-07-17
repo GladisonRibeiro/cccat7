@@ -1,10 +1,11 @@
 import { Coupon } from './Coupon';
 import { Cpf } from './Cpf';
+import { FreightCalculator } from './FreightCalculator';
 import { Item } from './Item';
 import { OrderItem } from './OrderItem';
 
 export class Order {
-  private _minShippingCost = 10;
+  private _freight = 0;
   private _cpf: Cpf;
   get cpf() {
     return this._cpf;
@@ -27,21 +28,12 @@ export class Order {
     if (this._itens.some(orderItem => orderItem.idItem == item.idItem)) {
       throw new Error('Item already exists');
     }
-    this._itens.push(
-      new OrderItem(
-        item.idItem,
-        item.price,
-        quantity,
-        item.length,
-        item.width,
-        item.height,
-        item.weight,
-      ),
-    );
+    this._itens.push(new OrderItem(item.idItem, item.price, quantity));
+    this._freight += FreightCalculator.calculate(item) * quantity;
   }
 
   addCoupon(coupon: Coupon) {
-    if (coupon.expired()) {
+    if (coupon.isExpired()) {
       throw new Error('Coupon is expired');
     }
     this._coupon = coupon;
@@ -52,14 +44,9 @@ export class Order {
     if (this._coupon) {
       total -= this._coupon.getDiscount(total);
     }
+    if (this._freight) {
+      total += this._freight;
+    }
     return total;
-  }
-
-  shippingCost(distance: number) {
-    const total = this._itens.reduce(
-      (total, item) => total + item.shippingCost(distance),
-      0,
-    );
-    return total > this._minShippingCost ? total : this._minShippingCost;
   }
 }
